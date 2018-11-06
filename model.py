@@ -46,15 +46,10 @@ class Watch(nn.Module):
             hidden_state of lstm
             size (layer_size, batch_size, 512)
         '''
-        size = list(x.size())
-        
+        length = x.size(1)
         # assert len(size) == 4, 'video input size is wrong'
         # assert size[2:] == [120, 120], 'image size should 120 * 120'
-
-        outputs = []
-        for i in range(size[1] - 4):
-            outputs.append(self.encoder(x[:, i:i+5, :, :]).unsqueeze(1))
-        x = torch.cat(outputs, dim=1)
+        x = self.encoder(x.view(-1, 1, 120, 120)).view(-1, length, 512)
         length, perm_idx = length.sort(0, descending=True)
 
         # for i, tensor in enumerate(x):
